@@ -40,5 +40,5 @@ Swagger UI is enabled for development, providing an interactive documentation in
 - Some initial Model data validation has been added but could be enhanced further. 
 - The API is not secured, and would need to be enhanced for production use.
 - Additional time would also provide more extensive testing and error handling. 
-- Request and Response models are typically used as DTOs to separate the API from the domain models and would have been added if time permitted. 
+- Request and Response models are typically used as DTOs to separate the API from the domain models and would have been added utilizing automapper if time permitted. 
 
