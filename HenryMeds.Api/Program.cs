@@ -1,6 +1,7 @@
 
 using HenryMeds.Api.Data;
 using HenryMeds.Api.Data.Models;
+using HenryMeds.Api.Helpers;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
@@ -59,16 +60,11 @@ namespace HenryMeds.Api
             // 1) Endpoint to allow providers to submit their availability.
             app.MapPost("/providers/availability", async (AppDbContext db, AppointmentSlot slot) =>
             {
-                var validationResults = new List<ValidationResult>();
-                var validationContext = new ValidationContext(slot);
-          
-                if (!Validator.TryValidateObject(slot, validationContext, validationResults, true))
-                {
-                    // Extract error messages.
-                    var errorMessages = validationResults.Select(vr => vr.ErrorMessage);
+                var (isValid, errors) = ValidationHelper.ValidateModel(slot);
 
-                    // Return bad request with validation errors.
-                    return Results.BadRequest(errorMessages);
+                if (!isValid)
+                {
+                    return Results.BadRequest(errors);
                 }
 
                 // Check if a similar slot already exists.
@@ -107,16 +103,11 @@ namespace HenryMeds.Api
                 // Set the reservation time to the current time. This will expire after 30 mins if not confirmed. 
                 reservation.ReservationTime = DateTime.UtcNow;
 
-                var validationResults = new List<ValidationResult>();
-                var validationContext = new ValidationContext(reservation);
-          
-                if (!Validator.TryValidateObject(reservation, validationContext, validationResults, true))
-                {
-                    // Extract error messages.
-                    var errorMessages = validationResults.Select(vr => vr.ErrorMessage);
+                var (isValid, errors) = ValidationHelper.ValidateModel(reservation);
 
-                    // Return bad request with validation errors.
-                    return Results.BadRequest(errorMessages);
+                if (!isValid)
+                {
+                    return Results.BadRequest(errors);
                 }
 
                 var slot = await db.AppointmentSlots.FindAsync(reservation.AppointmentSlotId);
